@@ -6,7 +6,7 @@ Create a new project called pyvms.
 pulumi new -d "Vms using python" --dir pyvms gcp-python -y -s pyvmstack
 ```
 
-```output
+```console
 Created project 'pyvms'
 
 Created stack 'pyvmstack'
@@ -40,7 +40,7 @@ Create the stack.
 pulumi up -y
 ```
 
-```output
+```console
 Previewing update (pyvmstack):
 
      Type                     Name             Plan       
@@ -81,7 +81,7 @@ Destroy the stack
 pulumi destroy -y
 ```
 
-```output
+```console
 Previewing destroy (pyvmstack):
 
      Type                     Name             Plan       
@@ -127,6 +127,6 @@ If you want to remove the stack completely, run 'pulumi stack rm pyvmstack'.
 pulumi stack rm pyvmstack -y
 ```
 
-```output
+```console
 Stack 'pyvmstack' has been removed!
 ```

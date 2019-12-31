@@ -6,7 +6,9 @@ Pulumi demo using Google Cloud Platform
 pulumi login --local
 ```
 
+```console
 Logged into MBP-Aldo as everis (file://~)
+```
 
 ```sh
 export PULUMI_CONFIG_PASSPHRASE='hardcoded'
