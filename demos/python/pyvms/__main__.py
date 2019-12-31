@@ -1,6 +1,10 @@
 import pulumi
 from pulumi_gcp import compute
 
+with open('init_script.sh', 'r') as init_script:
+    init_data = init_script.read()
+bootstrap = init_data
+
 project="gdcdevops"
 region="us-central1"
 
@@ -47,7 +51,8 @@ instance = compute.Instance(
                 "natIp": addr.address
             }]
         }
-    ]
+    ],
+    metadata_startup_script=bootstrap
 )
 
 # Export the DNS name of the bucket
