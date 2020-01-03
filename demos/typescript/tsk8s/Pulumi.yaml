@@ -1,0 +1,3 @@
+name: tsk8s
+runtime: nodejs
+description: k8s cluster using typescript
