@@ -22,8 +22,9 @@ export GOOGLE_APPLICATION_CREDENTIALS="/Users/everis/gcloud/gcp-service-account.
 
 ## Python Demo
 
-Create VMs using python.
+* [Create VMs.](demos/python/pyvms/README.md)
 
 ## Typescript Demo
 
-Create VMs using typescript.
+* [Create VMs.](demos/typescript/tsvms/README.md)
+* [Create kubernetes Cluster.](demos/typescript/tsk8s/README.md)

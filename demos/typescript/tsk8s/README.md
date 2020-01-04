@@ -95,28 +95,48 @@ pulumi up -y
 ```console
 Previewing update (tsk8stack):
 
-     Type                      Name             Plan       
- +   pulumi:pulumi:Stack       tsk8s-tsk8stack  create     
- +   └─ gcp:container:Cluster  gdcdevops        create     
+     Type                       Name             Plan       
+ +   pulumi:pulumi:Stack        tsk8s-tsk8stack  create     
+ +   ├─ gcp:compute:Network     tsk8snet         create     
+ +   ├─ gcp:compute:Subnetwork  tsk8ssubnet      create     
+ +   └─ gcp:container:Cluster   gdcdevops        create     
  
 Resources:
-    + 2 to create
+    + 4 to create
 
 Updating (tsk8stack):
 
-     Type                      Name             Status      
- +   pulumi:pulumi:Stack       tsk8s-tsk8stack  created     
- +   └─ gcp:container:Cluster  gdcdevops        created     
+     Type                       Name             Status      
+ +   pulumi:pulumi:Stack        tsk8s-tsk8stack  created     
+ +   ├─ gcp:compute:Network     tsk8snet         created     
+ +   ├─ gcp:compute:Subnetwork  tsk8ssubnet      created     
+ +   └─ gcp:container:Cluster   gdcdevops        created     
  
 Outputs:
-    clusterName: "gdcdevops-d3b3628"
+    clusterName: "gdcdevops-605ed93"
+    kubeconfig : "apiVersion: v1\nclusters:\n- cluster:\n    certificate-authority-data:
+    .
+    .
+    ."
 
 Resources:
-    + 2 created
+    + 4 created
 
-Duration: 3m22s
+Duration: 3m44s
 
 Permalink: file:///Users/everis/.pulumi/stacks/tsk8stack.json
+```
+
+Write the kubeconfig to a file.
+
+```sh
+pulumi stack output kubeconfig > kubeconfig
+```
+
+Test the connection to the cluster.
+
+```sh
+kubectl --kubeconfig=kubeconfig get nodes
 ```
 
 Destroy the stack.
@@ -128,29 +148,41 @@ pulumi destroy -y
 ```console
 Previewing destroy (tsk8stack):
 
-     Type                      Name             Plan       
- -   pulumi:pulumi:Stack       tsk8s-tsk8stack  delete     
- -   └─ gcp:container:Cluster  gdcdevops        delete     
+     Type                       Name             Plan       
+ -   pulumi:pulumi:Stack        tsk8s-tsk8stack  delete     
+ -   ├─ gcp:container:Cluster   gdcdevops        delete     
+ -   ├─ gcp:compute:Subnetwork  tsk8ssubnet      delete     
+ -   └─ gcp:compute:Network     tsk8snet         delete     
  
 Outputs:
-  - clusterName: "gdcdevops-d3b3628"
+  - clusterName: "gdcdevops-605ed93"
+  - kubeconfig : "apiVersion: v1\nclusters:\n- cluster:\n    certificate-authority-data:
+    .
+    .
+    ."
 
 Resources:
-    - 2 to delete
+    - 4 to delete
 
 Destroying (tsk8stack):
 
-     Type                      Name             Status      
- -   pulumi:pulumi:Stack       tsk8s-tsk8stack  deleted     
- -   └─ gcp:container:Cluster  gdcdevops        deleted     
+     Type                       Name             Status      
+ -   pulumi:pulumi:Stack        tsk8s-tsk8stack  deleted     
+ -   ├─ gcp:container:Cluster   gdcdevops        deleted     
+ -   ├─ gcp:compute:Subnetwork  tsk8ssubnet      deleted     
+ -   └─ gcp:compute:Network     tsk8snet         deleted     
  
 Outputs:
-  - clusterName: "gdcdevops-d3b3628"
+  - clusterName: "gdcdevops-605ed93"
+  - kubeconfig : "apiVersion: v1\nclusters:\n- cluster:\n    certificate-authority-data:
+    .
+    .
+    ."
 
 Resources:
-    - 2 deleted
+    - 4 deleted
 
-Duration: 3m7s
+Duration: 3m42s
 
 Permalink: file:///Users/everis/.pulumi/stacks/tsk8stack.json
 The resources in the stack have been deleted, but the history and configuration associated with the stack are still maintained. 
