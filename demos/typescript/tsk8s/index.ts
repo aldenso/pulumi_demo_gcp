@@ -4,6 +4,7 @@ import * as gcp from "@pulumi/gcp";
 
 const name = "gdcdevops";
 const regionName = 'us-central1';
+const domain = 'aldenso.com'
 
 const computeNetwork = new gcp.compute.Network('tsk8snet', {
     project: name,
@@ -43,7 +44,7 @@ export const clusterName = cluster.name;
 // // Manufacture a GKE-style kubeconfig. Note that this is slightly "different"
 // // because of the way GKE requires gcloud to be in the picture for cluster
 // // authentication (rather than using the client cert/key directly).
-export const kubeconfig = pulumi.
+const kubeconfig = pulumi.
     all([ cluster.name, cluster.endpoint, cluster.masterAuth ]).
     apply(([ name, endpoint, masterAuth ]) => {
         const context = `${gcp.config.project}_${gcp.config.zone}_${name}`;
@@ -74,7 +75,50 @@ users:
 `;
     });
 
-// // Create a Kubernetes provider instance that uses our cluster from above.
-// const clusterProvider = new k8s.Provider(name, {
-//     kubeconfig: kubeconfig,
-// });
+export const KUBECONFIG = pulumi.secret(kubeconfig)
+
+// Create a Kubernetes provider instance that uses our cluster from above.
+const clusterProvider = new k8s.Provider(name, {
+    kubeconfig: kubeconfig,
+});
+
+// Deploy the NGINX ingress controller using the Helm chart.
+export const nginx = new k8s.helm.v2.Chart("nginx",
+    {
+        namespace: "default",
+        chart: "nginx-ingress",
+        version: "1.24.4",
+        fetchOpts: {repo: "https://kubernetes-charts.storage.googleapis.com/"},
+        values: {controller: {publishService: {enabled: false}}},
+        transformations: [
+            (obj: any) => {
+                // Do transformations on the YAML to set the namespace
+                if (obj.metadata) {
+                    obj.metadata.namespace = "default";
+                }
+            },
+        ],
+    },
+    {providers: {kubernetes: clusterProvider}, dependsOn: cluster},
+);
+
+export const ingressIp = nginx.getResourceProperty('v1/Service',
+                                              'default/nginx-nginx-ingress-controller',
+                                              'status')
+                                              .apply(status => status.loadBalancer.ingress[0].ip)
+
+export const dnsZone = new gcp.dns.ManagedZone('mydns-zone', {
+  description: "My dns Zone",
+  dnsName: domain+".",
+  name: "mydns-zone",
+  project: name,
+}, {dependsOn: nginx});
+
+export const dnsRecords = new gcp.dns.RecordSet('mydns-records', {
+  name: 'myk8s.'+domain+'.',
+  managedZone: dnsZone.name,
+  project: name,
+  ttl: 300,
+  rrdatas: [ingressIp],
+  type: 'A',
+}, {dependsOn: dnsZone});
