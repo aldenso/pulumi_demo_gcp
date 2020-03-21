@@ -20,6 +20,12 @@ Export your credentials file.
 export GOOGLE_APPLICATION_CREDENTIALS="/Users/everis/gcloud/gcp-service-account.json"
 ```
 
+Activate Service Account.
+
+```sh
+gcloud auth activate-service-account --key-file=/Users/everis/gcloud/gcp-service-account.json
+```
+
 ## Python Demo
 
 * [Create VMs.](demos/python/pyvms/README.md)
