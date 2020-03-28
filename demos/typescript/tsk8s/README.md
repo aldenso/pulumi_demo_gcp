@@ -43,7 +43,7 @@ Move to the directory and install the kubernetes dependencies.
 
 ```sh
 cd tsk8s
-npm install --save @pulumi/pulumi @pulumi/gcp @pulumi/kubernetes
+npm install --save @pulumi/pulumi @pulumi/gcp @pulumi/kubernetes @types/chai @types/mocha chai mocha
 ```
 
 ```console
@@ -94,37 +94,41 @@ pulumi up -y
 
 ```console
 Previewing update (tsk8stack):
-
-     Type                       Name             Plan       
- +   pulumi:pulumi:Stack        tsk8s-tsk8stack  create     
- +   ├─ gcp:compute:Network     tsk8snet         create     
- +   ├─ gcp:compute:Subnetwork  tsk8ssubnet      create     
- +   └─ gcp:container:Cluster   gdcdevops        create     
+     Type                                                           Name                                         Plan       Info
+ +   pulumi:pulumi:Stack                                            tsk8s-tsk8stack                              create     7 messages
+ +   ├─ gcp:dns:ManagedZone                                         mydns-zone                                   create     
+ +   ├─ gcp:compute:Network                                         tsk8snet                                     create     
+ +   ├─ gcp:compute:Subnetwork                                      tsk8ssubnet                                  create     
+ +   ├─ gcp:container:Cluster                                       gdcdevops                                    create     
+ +   ├─ kubernetes:helm.sh:Chart                                    nginx                                        create     
+ +   │  ├─ kubernetes:core:Service                                  default/nginx-nginx-ingress-default-backend  create     
+ +   │  ├─ kubernetes:apps:Deployment                               default/nginx-nginx-ingress-default-backend  create     
+ +   │  ├─ kubernetes:core:Service                                  default/nginx-nginx-ingress-controller       create     
+ +   │  ├─ kubernetes:rbac.authorization.k8s.io:ClusterRoleBinding  default/nginx-nginx-ingress                  create     
+ +   │  ├─ kubernetes:apps:Deployment                               default/nginx-nginx-ingress-controller       create     
+ +   │  ├─ kubernetes:rbac.authorization.k8s.io:RoleBinding         default/nginx-nginx-ingress                  create     
+ +   │  ├─ kubernetes:rbac.authorization.k8s.io:ClusterRole         default/nginx-nginx-ingress                  create     
+ +   │  ├─ kubernetes:rbac.authorization.k8s.io:Role                default/nginx-nginx-ingress                  create     
+ +   │  ├─ kubernetes:core:ServiceAccount                           default/nginx-nginx-ingress                  create     
+ +   │  └─ kubernetes:core:ServiceAccount                           default/nginx-nginx-ingress-backend          create     
+ +   ├─ pulumi:providers:kubernetes                                 gdcdevops                                    create     
+ +   └─ gcp:dns:RecordSet                                           mydns-records                                create     
  
-Resources:
-    + 4 to create
-
-Updating (tsk8stack):
-
-     Type                       Name             Status      
- +   pulumi:pulumi:Stack        tsk8s-tsk8stack  created     
- +   ├─ gcp:compute:Network     tsk8snet         created     
- +   ├─ gcp:compute:Subnetwork  tsk8ssubnet      created     
- +   └─ gcp:container:Cluster   gdcdevops        created     
+Diagnostics:
+  pulumi:pulumi:Stack (tsk8s-tsk8stack):
+    Running Mocha Tests: /Users/everis/github/pulumi_demo_gcp/demos/typescript/tsk8s/tests/tests.spec.ts
+      Infrastructure
+        #Cluster K8s
+          ✓ must have at least 3 nodes (206ms)
+        #Custom Net
+          ✓ must set a custom net, not default
+      2 passing (257ms)
  
-Outputs:
-    clusterName: "gdcdevops-605ed93"
-    kubeconfig : "apiVersion: v1\nclusters:\n- cluster:\n    certificate-authority-data:
-    .
-    .
-    ."
-
-Resources:
-    + 4 created
-
-Duration: 3m44s
 
 Permalink: file:///Users/everis/.pulumi/stacks/tsk8stack.json
+.
+.
+.
 ```
 
 Write the kubeconfig to a file.

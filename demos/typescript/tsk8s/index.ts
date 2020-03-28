@@ -2,14 +2,19 @@ import * as k8s from "@pulumi/kubernetes";
 import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
 
+import { runTests } from "./tests";
+
 const name = "gdcdevops";
 const regionName = 'us-central1';
-const domain = 'aldenso.com'
+const domain = 'aldenso.com';
+const initialNodes = 3;
 
 const computeNetwork = new gcp.compute.Network('tsk8snet', {
     project: name,
     autoCreateSubnetworks: false
 });
+
+export const customNet = computeNetwork;
 
 const computeSubNetwork = new gcp.compute.Subnetwork('tsk8ssubnet', {
     ipCidrRange: '10.2.1.0/24',
@@ -21,7 +26,7 @@ const computeSubNetwork = new gcp.compute.Subnetwork('tsk8ssubnet', {
 // Create a GKE cluster
 const engineVersion = gcp.container.getEngineVersions().latestMasterVersion;
 const cluster = new gcp.container.Cluster(name, {
-    initialNodeCount: 2,
+    initialNodeCount: initialNodes,
     minMasterVersion: engineVersion,
     nodeVersion: engineVersion,
     location: regionName+"-a",
@@ -37,6 +42,9 @@ const cluster = new gcp.container.Cluster(name, {
         ],
     },
 });
+
+// Export Cluster
+export const ClusterK8s = cluster
 
 // Export the Cluster name
 export const clusterName = cluster.name;
@@ -122,3 +130,5 @@ export const dnsRecords = new gcp.dns.RecordSet('mydns-records', {
   rrdatas: [ingressIp],
   type: 'A',
 }, {dependsOn: dnsZone});
+
+runTests();
